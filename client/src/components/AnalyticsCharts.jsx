@@ -2,11 +2,11 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'rec
 
 const AnalyticsCharts = ({ reportData, metrics }) => {
   
-  // 1. Process data and ensure values are strictly numbers
+  // Normalize analytics rows from either aggregated revenue endpoint or legacy showtime-like data.
   const revenueChartData = reportData.map(item => {
-    const movieTitle = item.movieId?.title || 'Unknown Film';
-    const ticketsSoldCount = Number(item.reservedSeats?.length || 0);
-    const calculatedRevenue = Number(ticketsSoldCount * (item.basePrice || 0));
+    const movieTitle = item._id || item.movieId?.title || 'Unknown Film';
+    const ticketsSoldCount = Number(item.seatsReservedTotal ?? item.reservedSeats?.length ?? 0);
+    const calculatedRevenue = Number(item.totalRevenueGenerated ?? (ticketsSoldCount * (item.basePrice || 0)));
 
     return {
       name: movieTitle,

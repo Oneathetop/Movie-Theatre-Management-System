@@ -9,19 +9,22 @@ import AnalyticsCharts from './components/AnalyticsCharts';
 function App() {
   const [showtimes, setShowtimes] = useState([]);
   const [metrics, setMetrics] = useState(null);
+  const [revenueReport, setRevenueReport] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeSessionId, setActiveSessionId] = useState(null);
 
   const fetchDashboardData = useCallback(async () => {
     try {
-      const [showtimeRes, analyticsRes] = await Promise.all([
+      const [showtimeRes, analyticsRes, revenueRes] = await Promise.all([
         axios.get('http://localhost:5000/api/showtimes'),
-        axios.get('http://localhost:5000/api/analytics/dashboard')
+        axios.get('http://localhost:5000/api/analytics/dashboard'),
+        axios.get('http://localhost:5000/api/analytics/revenue-report')
       ]);
 
       setShowtimes(showtimeRes.data.data);
       setMetrics(analyticsRes.data.metrics);
+      setRevenueReport(revenueRes.data?.reportData || []);
       setLoading(false);
     } catch {
       setError('Failed to pull data feeds from local backend API server.');
@@ -55,8 +58,8 @@ function App() {
       <h2>Management Analytics</h2>
       <AnalyticsWidget metrics={metrics} />
 
-      // Render the analytics charts with the fetched report data and metrics
-      <AnalyticsCharts reportData={metrics?.revenueReport || []} metrics={metrics} />
+      {/* Render the analytics charts with the fetched report data and metrics */}
+      <AnalyticsCharts reportData={revenueReport} metrics={metrics} />
 
       <h2 style={{ marginTop: '40px' }}>Now Screening Schedulers</h2>
       <p style={{ color: '#888', fontSize: '14px', marginTop: '-10px' }}>Click a card below to load the interactive seating map grid:</p>
