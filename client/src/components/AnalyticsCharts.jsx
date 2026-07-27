@@ -1,51 +1,57 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const AnalyticsCharts = ({ reportData, metrics }) => {
   
-  // 🚀 FIXED LOGIC: Map directly from your active raw showtime data array streams
+  // 1. Process data and ensure values are strictly numbers
   const revenueChartData = reportData.map(item => {
-    // Look safely inside the populated nested movie title object
     const movieTitle = item.movieId?.title || 'Unknown Film';
-    
-    // Calculate financial yields and ticket logs dynamically on the fly
-    const ticketsSoldCount = item.reservedSeats?.length || 0;
-    const calculatedRevenue = ticketsSoldCount * (item.basePrice || 0);
+    const ticketsSoldCount = Number(item.reservedSeats?.length || 0);
+    const calculatedRevenue = Number(ticketsSoldCount * (item.basePrice || 0));
 
     return {
       name: movieTitle,
-      "Gross Revenue ($)": calculatedRevenue,
-      "Tickets Sold": ticketsSoldCount
+      revenue: calculatedRevenue,
+      tickets: ticketsSoldCount
     };
   });
 
-  // Parse out numerical capacity metrics safely for the visual gauge bar track
   const rawPercentage = metrics ? parseFloat(metrics.capacityUtilizationRate) : 0;
+  
+  // 🚀 CRUCIAL FIX: Generate a unique dynamic key based on total tickets sold.
+  // This forces the chart layout to redraw itself instantly when a seat is purchased.
+  const chartRefreshKey = metrics ? metrics.totalTicketsSold : 0;
 
   return (
     <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginTop: '32px', marginBottom: '32px', fontFamily: 'sans-serif' }}>
       
       {/* Panel A: Financial Performance Yield Graph */}
-      <div style={{ flex: '2', minWidth: '320px', background: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <div style={{ flex: '2', minWidth: '350px', background: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
         <h4 style={{ margin: '0 0 16px 0', color: '#333' }}>Revenue Yield Analysis</h4>
-        <div style={{ width: '100%', height: 260 }}>
-          <ResponsiveContainer>
-            <BarChart data={revenueChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-              <XAxis dataKey="name" stroke="#666" fontSize={12} tickLine={false} />
-              <YAxis stroke="#666" fontSize={12} tickLine={false} />
-              <Tooltip cursor={{ fill: '#f5f5f5' }} />
-              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-              
-              {/* 🚀 Ensure dataKey matching parameters align with our mapped return object keys exactly */}
-              <Bar dataKey="Gross Revenue ($)" fill="#2e7d32" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Tickets Sold" fill="#1976d2" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        
+        {/* 🚀 FIXED: Replaced ResponsiveContainer with fixed parameters to prevent 0px width bugs */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <BarChart 
+            key={chartRefreshKey} 
+            width={450} 
+            height={260} 
+            data={revenueChartData} 
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+            <XAxis dataKey="name" stroke="#666" fontSize={12} tickLine={false} />
+            <YAxis stroke="#666" fontSize={12} tickLine={false} />
+            <Tooltip cursor={{ fill: '#f5f5f5' }} />
+            <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+            
+            {/* 🚀 FIXED: Kept lower-case keys for data mapping, display titles handled via 'name' attribute */}
+            <Bar dataKey="revenue" fill="#2e7d32" name="Gross Revenue ($)" barSize={40} />
+            <Bar dataKey="tickets" fill="#1976d2" name="Tickets Sold" barSize={40} />
+          </BarChart>
         </div>
       </div>
 
       {/* Panel B: Executive Capacity Utilization Gauge Block */}
-      <div style={{ flex: '1', minWidth: '240px', background: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+      <div style={{ flex: '1', minWidth: '250px', background: '#fff', padding: '20px', borderRadius: '8px', border: '1px solid #e0e0e0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
         <div>
           <h4 style={{ margin: '0 0 4px 0', color: '#333' }}>Capacity Tracking</h4>
           <p style={{ color: '#888', fontSize: '12px', margin: '0 0 24px 0' }}>Live screening utilization metrics</p>
