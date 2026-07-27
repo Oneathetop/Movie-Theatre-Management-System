@@ -1,0 +1,9 @@
+# Ignore server and client dependencies
+**/node_modules/
+Server/.env
+
+# Ignore production builds and IDE logs
+Client/dist/
+.DS_Store
+*.log
+.vscode/
