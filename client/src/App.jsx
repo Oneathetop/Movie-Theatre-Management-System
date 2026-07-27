@@ -4,6 +4,7 @@ import ShowtimeCard from './components/ShowtimeCard';
 import AnalyticsWidget from './components/AnalyticsWidget';
 import SeatMap from './components/SeatMap';
 import RevenueReport from './components/RevenueReport';
+import AnalyticsCharts from './components/AnalyticsCharts';
 
 function App() {
   const [showtimes, setShowtimes] = useState([]);
@@ -53,6 +54,9 @@ function App() {
 
       <h2>Management Analytics</h2>
       <AnalyticsWidget metrics={metrics} />
+
+      // Render the analytics charts with the fetched report data and metrics
+      <AnalyticsCharts reportData={metrics?.revenueReport || []} metrics={metrics} />
 
       <h2 style={{ marginTop: '40px' }}>Now Screening Schedulers</h2>
       <p style={{ color: '#888', fontSize: '14px', marginTop: '-10px' }}>Click a card below to load the interactive seating map grid:</p>
