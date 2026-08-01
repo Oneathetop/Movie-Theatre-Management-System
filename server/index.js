@@ -4,6 +4,7 @@ const dotenv = require('dotenv')
 const cors = require('cors');
 
 // Register all Mongoose models in memory immediately on boot
+require('./models/User');
 require('./models/Movie');
 require('./models/Auditorium');
 require('./models/Showtime');
