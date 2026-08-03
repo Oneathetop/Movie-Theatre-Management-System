@@ -14,6 +14,7 @@ require('./models/Booking');
 const showtimeRoutes = require('./routes/showtimeRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(cors());
 app.use('/api/showtimes', showtimeRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/auth', authRoutes);
 
 // Base test route to verify that the server is running
 app.get('/api/health', (req, res) => {
